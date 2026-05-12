@@ -98,7 +98,15 @@
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
-
+                    <div class="card2 maturity-card" data-maturity="{{ maturity_label }}">
+                        <div class="title">Maturity Level</div>
+                        <div class="value">{{ maturity_label }}</div>
+                    </div>
+                    <div class="maturity-progress-box">
+                        <div class="maturity-progress">
+                            <div class="maturity-progress-fill"></div>
+                        </div>
+                    </div>
             </div>
             {% endif %}
     </div>
@@ -347,6 +355,50 @@ if (radarCtx) {
     });
 
 }
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const levelMap = {
+        "Incomplet": 16,
+        "Exécuté": 33,
+        "Maîtrisé": 51,
+        "Établi": 68,
+        "Prévisible": 85,
+        "Optimisé": 100
+    };
+
+    document.querySelectorAll(".maturity-card").forEach(card => {
+
+        const level = card.getAttribute("data-maturity")?.trim();
+
+        console.log("MATURITY:", level); // DEBUG
+
+        const progress = levelMap[level];
+
+        const bar = card.querySelector(".maturity-progress-fill");
+
+        if (!bar) {
+            console.log("BAR NOT FOUND");
+            return;
+        }
+
+        if (progress !== undefined) {
+
+            bar.style.width = progress + "%";
+
+            if (progress <= 16) bar.style.background = "#ef4444";
+            else if (progress <= 33) bar.style.background = "#f59e0b";
+            else if (progress <= 51) bar.style.background = "#fbbf24";
+            else if (progress <= 68) bar.style.background = "#22c55e";
+            else if (progress <= 85) bar.style.background = "#3b82f6";
+            else bar.style.background = "#4f46e5";
+        }
+
+    });
+
+});
 </script>
 </body>
 </html>

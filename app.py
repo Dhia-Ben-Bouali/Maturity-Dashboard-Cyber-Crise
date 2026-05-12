@@ -35,6 +35,7 @@ def dashboard():
     score_domain = 0
     auditeur = None
     domain_scores = []
+    maturity_label = ""
 
     df = pd.read_excel(
         "Data/LIVRABLE.xlsx",
@@ -74,10 +75,10 @@ def dashboard():
         titles = [
             "Total Questions",
             "Questions Applicable",
-            "Yes",
-            "No",
-            "N/A",
-            "Score Domain",
+            "Conforme",
+            "Non Conforme",
+            "Questions non-applicable",
+            "Score Final",
         ]
 
         for t, v in zip(titles, values):
@@ -88,6 +89,34 @@ def dashboard():
                 "icon": ICON_MAP.get(t, "img/default.png"),
                 "is_number": True
             })
+        allowed_domains = [
+        "Forensics",
+        "Continuité d’activité",
+        "Gestion de crise",
+        "Gestion Incidents",
+        "Confirmitee",
+        "Gouvernance"
+        ]
+
+        for _, r in df.iterrows():
+
+            domain_name = str(r["Domaine"]).strip()
+
+            if domain_name in allowed_domains:
+
+                score = r["ScoreDomain"]
+
+                if isinstance(score, str):
+                    score = float(score.replace(",", "."))
+
+                score = round(float(score) * 100, 1)
+
+                cards.append({
+                    "title": domain_name,
+                    "value": f"{score} %",
+                    "icon": "img/5.png",
+                    "is_number": False
+                })
 
         score_domain = values[5]
 
@@ -103,6 +132,22 @@ def dashboard():
             "na": round((na / total) * 100, 1) if total else 0
         }
 
+        maturity_levels = [
+            {"label": "Incomplet", "min": 0, "max": 16},
+            {"label": "Exécuté", "min": 17, "max": 33},
+            {"label": "Maîtrisé", "min": 34, "max": 51},
+            {"label": "Établi", "min": 52, "max": 68},
+            {"label": "Prévisible", "min": 69, "max": 85},
+            {"label": "Optimisé", "min": 86, "max": 100},
+        ]
+
+        maturity_label = "N/A"
+
+        for level in maturity_levels:
+
+            if level["min"] <= score <= level["max"]:
+                maturity_label = level["label"]
+                break
     # ======================================================
     # DOMAIN TAB (ALL OTHER DOMAINS)
     # ======================================================
@@ -195,7 +240,8 @@ def dashboard():
         active=domain,
         chart_data=chart_data,
         score_domain=score_domain,
-        domain_scores=domain_scores
+        domain_scores=domain_scores,
+        maturity_label=maturity_label
     )
 
 
