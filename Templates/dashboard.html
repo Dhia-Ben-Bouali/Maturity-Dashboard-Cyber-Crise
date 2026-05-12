@@ -69,31 +69,39 @@
     <div class="dashboard-layout">
 
         <!-- LEFT SIDE: GRAPHS -->
-        <div class="left-panel">
+    <div class="left-panel">
+        <div class="graphs-row">
 
-            {% if active != "Result" %}
+            <div class="graph-card">
+                <div class="graph-title">Response Distribution</div>
+                <div class="graph-container">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
 
+            <div class="graph-card">
+                <div class="graph-title">Domain Score</div>
+                <div class="gauge-container">
+                    <canvas id="gaugeChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- NEW ROW: ALL DOMAIN SCORES -->
+        {% if active == "Result" %}
             <div class="graphs-row">
 
-                <div class="graph-card">
-                    <div class="graph-title">Response Distribution</div>
+                <div class="graph-card" style="width: 100%;">
+                    <div class="graph-title">Domain Maturity Radar</div>
                     <div class="graph-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="graph-card">
-                    <div class="graph-title">Domain Score</div>
-                    <div class="gauge-container">
-                        <canvas id="gaugeChart"></canvas>
+                        <canvas id="radarChart"></canvas>
                     </div>
                 </div>
 
             </div>
-
             {% endif %}
-
-        </div>
+    </div>
 
         <!-- RIGHT SIDE: KPI CARDS -->
         <div class="right-panel">
@@ -288,6 +296,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+
+const domainScores = {{ domain_scores|tojson }};
+
+// allowed domains only
+const allowed = [
+    "Forensics",
+    "Continuité d’activité",
+    "Gestion de crise",
+    "Gestion Incidents",
+    "Confirmitee",
+    "Gouvernance"
+];
+
+const filtered = domainScores.filter(d => allowed.includes(d.domain));
+
+const labels = filtered.map(d => d.domain);
+const data = filtered.map(d => d.score);
+
+const radarCtx = document.getElementById("radarChart");
+
+if (radarCtx) {
+
+    new Chart(radarCtx, {
+        type: "radar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Maturity Score (%)",
+                data: data,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+}
 </script>
 </body>
 </html>

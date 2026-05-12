@@ -32,24 +32,84 @@ def dashboard():
 
     cards = []
     chart_data = {}
-    values = []
+    score_domain = 0
     auditeur = None
+    domain_scores = []
 
-    if domain != "Result":
+    df = pd.read_excel(
+        "Data/LIVRABLE.xlsx",
+        sheet_name="FinalResult",
+        header=0
+    )
 
-        df = pd.read_excel(
+    df["Domaine"] = df["Domaine"].astype(str).str.strip()
+
+    # ======================================================
+    # RESULT TAB
+    # ======================================================
+    if domain == "Result":
+
+        df_raw = pd.read_excel(
             "Data/LIVRABLE.xlsx",
             sheet_name="FinalResult",
-            header=0
+            header=None
         )
 
-        # remove extra spaces in Excel
-        df["Domaine"] = df["Domaine"].astype(str).str.strip()
+        row = df_raw.iloc[7]  # line 8
 
-        # same for URL parameter
+        def fix(v):
+            if isinstance(v, str):
+                return float(v.replace(",", "."))
+            return float(v)
+
+        values = [
+            fix(row[1]),
+            fix(row[2]),
+            fix(row[3]),
+            fix(row[4]),
+            fix(row[5]),
+            fix(row[6]),
+        ]
+
+        titles = [
+            "Total Questions",
+            "Questions Applicable",
+            "Yes",
+            "No",
+            "N/A",
+            "Score Domain",
+        ]
+
+        for t, v in zip(titles, values):
+
+            cards.append({
+                "title": t,
+                "value": int(v) if t != "Score Domain" else round(v, 2),
+                "icon": ICON_MAP.get(t, "img/default.png"),
+                "is_number": True
+            })
+
+        score_domain = values[5]
+
+        yes = values[2]
+        no = values[3]
+        na = values[4]
+
+        total = yes + no + na
+
+        chart_data = {
+            "yes": round((yes / total) * 100, 1) if total else 0,
+            "no": round((no / total) * 100, 1) if total else 0,
+            "na": round((na / total) * 100, 1) if total else 0
+        }
+
+    # ======================================================
+    # DOMAIN TAB (ALL OTHER DOMAINS)
+    # ======================================================
+    else:
+
         domain_clean = domain.strip()
 
-        # find matching row
         row = df[df["Domaine"] == domain_clean]
 
         if not row.empty:
@@ -81,7 +141,7 @@ def dashboard():
                 auditeur = "N/A"
             else:
                 auditeur = str(auditeur).strip()
-            
+
             for title, value in zip(titles, values):
 
                 if title == "Score":
@@ -93,58 +153,41 @@ def dashboard():
                     "value": format_value(value),
                     "icon": ICON_MAP.get(title, "img/default.png")
                 })
-            # ADD THIS
+
             cards.append({
                 "title": "Auditeur",
-                "value": "N/A" if pd.isna(auditeur) else str(auditeur),
+                "value": auditeur,
                 "icon": "img/7.png",
                 "is_number": False
             })
-            print("FINAL AUDITEUR:", auditeur, type(auditeur))
 
             total = int(values[2]) + int(values[3]) + int(values[4])
 
-            yes = int(values[2])
-            no = int(values[3])
-            na = int(values[4])
-
             chart_data = {
-                "yes": round((yes / total) * 100, 1) if total else 0,
-                "no": round((no / total) * 100, 1) if total else 0,
-                "na": round((na / total) * 100, 1) if total else 0
+                "yes": round((values[2] / total) * 100, 1) if total else 0,
+                "no": round((values[3] / total) * 100, 1) if total else 0,
+                "na": round((values[4] / total) * 100, 1) if total else 0
             }
 
             score_domain = round(float(values[5]) * 100, 1)
 
-        else:
-            score_domain = 0
+    # ======================================================
+    # DOMAIN SCORES (ALL DOMAINS ROWS 2–7)
+    # ======================================================
 
-    if domain == "Result":
+    subset = df.iloc[1:7]
 
-        df = pd.read_excel(
-            "Data/LIVRABLE.xlsx",
-            sheet_name="FinalResult",
-            header=None
-        )
+    for _, r in subset.iterrows():
 
-        # line 8 = row index 7 (0-based indexing)
-        row = df.iloc[7]
+        sc = r["ScoreDomain"]
 
-        final_score = row[6]  # adjust column if needed
+        if isinstance(sc, str):
+            sc = float(sc.replace(",", "."))
 
-        if pd.isna(final_score):
-            final_score = 0
-        else:
-            final_score = round(final_score, 1)
-
-        cards = [{
-            "title": "Final Score",
-            "value": f"{final_score} %",
-            "icon": "img/score.png"
-        }]
-
-        chart_data = {}
-        score_domain = final_score
+        domain_scores.append({
+            "domain": r["Domaine"],
+            "score": round(float(sc) * 100, 1)
+        })
 
     return render_template(
         "dashboard.html",
@@ -152,6 +195,7 @@ def dashboard():
         active=domain,
         chart_data=chart_data,
         score_domain=score_domain,
+        domain_scores=domain_scores
     )
 
 
