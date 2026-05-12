@@ -34,7 +34,7 @@
         Gestion Incidents
     </a>
 
-    <a href="/?domain=Conformité" class="{% if active=='Conformité' %}active{% endif %}">
+    <a  href="/?domain=Confirmitee" class="{% if active=='Conformité' %}active{% endif %}">
         Conformité
     </a>
 
@@ -71,7 +71,7 @@
         <!-- LEFT SIDE: GRAPHS -->
         <div class="left-panel">
 
-            {% if active == "Gouvernance" %}
+            {% if active != "Result" %}
 
             <div class="graphs-row">
 
@@ -109,9 +109,10 @@
                                 <img src="{{ url_for('static', filename=card.icon) }}" />
                         </span>
                     </div>
-                    <div class="value count-up" data-value="{{ card.value }}">
-                        0
-                    </div>
+                        <div class="value"
+                            {% if card.is_number %}count-up data-value="{{ card.value }}"{% endif %}>
+                            {{ card.value }}
+                        </div>
                 </div>
                 {% endfor %}
 
