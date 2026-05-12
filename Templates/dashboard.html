@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <h2>Domains</h2>
+
+    <a href="/?domain=Forensics" class="{% if active=='Forensics' %}active{% endif %}">
+        Forensics
+    </a>
+
+    <a href="/?domain=Continuité d’activité" class="{% if active=='Continuité d’activité' %}active{% endif %}">
+        Continuité d’activité
+    </a>
+
+    <a href="/?domain=Gestion de crise" class="{% if active=='Gestion de crise' %}active{% endif %}">
+        Gestion de crise
+    </a>
+
+    <a href="/?domain=Gestion Incidents" class="{% if active=='Gestion Incidents' %}active{% endif %}">
+        Gestion Incidents
+    </a>
+
+    <a href="/?domain=Conformité" class="{% if active=='Conformité' %}active{% endif %}">
+        Conformité
+    </a>
+
+    <a href="/?domain=Gouvernance" class="{% if active=='Gouvernance' %}active{% endif %}">
+        Gouvernance
+    </a>
+
+    <hr>
+
+    <a href="/?domain=Result" class="{% if active=='Result' %}active{% endif %}">
+        Result
+    </a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="page-header">
+        <div class="page-title">
+            {{ active }}
+        </div>
+
+        <div class="page-badge">
+            Active Domain
+        </div>
+    </div>
+
+    <!-- =========================
+         2-COLUMN LAYOUT
+    ========================== -->
+    <div class="dashboard-layout">
+
+        <!-- LEFT SIDE: GRAPHS -->
+        <div class="left-panel">
+
+            {% if active == "Gouvernance" %}
+
+            <div class="graphs-row">
+
+                <div class="graph-card">
+                    <div class="graph-title">Response Distribution</div>
+                    <div class="graph-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="graph-card">
+                    <div class="graph-title">Domain Score</div>
+                    <div class="gauge-container">
+                        <canvas id="gaugeChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- RIGHT SIDE: KPI CARDS -->
+        <div class="right-panel">
+
+            <div class="kpi-grid">
+
+                {% for card in cards %}
+                <div class="card">
+
+                    <div class="title">
+                        <span class="title-text">{{ card.title }}</span>
+                        <span class="title-icon">
+                                <img src="{{ url_for('static', filename=card.icon) }}" />
+                        </span>
+                    </div>
+                    <div class="value count-up" data-value="{{ card.value }}">
+                        0
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!-- SCRIPT ALWAYS AT END -->
+<script>
+    
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================
+       DONUT CHART
+    ========================== */
+
+    const pieCanvas = document.getElementById("pieChart");
+
+    if (pieCanvas) {
+
+        new Chart(pieCanvas, {
+
+            type: "doughnut",
+
+            data: {
+                labels: ["Yes", "No", "N/A"],
+
+                datasets: [{
+                    data: [
+                        {{ chart_data.yes|default(0) }},
+                        {{ chart_data.no|default(0) }},
+                        {{ chart_data.na|default(0) }}
+                    ]
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                cutout: "70%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom"
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ": " + context.raw + "%";
+                            }
+                        }
+                    }
+                }
+            }
+
+        });
+
+    }
+
+    /* =========================
+       GAUGE CHART
+    ========================== */
+
+    const gaugeCanvas = document.getElementById("gaugeChart");
+
+    if (gaugeCanvas) {
+
+        const score = {{ score_domain|default(0) }};
+
+        new Chart(gaugeCanvas, {
+
+            type: "doughnut",
+
+            data: {
+                datasets: [{
+                    data: [score, 100 - score]
+                }]
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                rotation: -90,
+                circumference: 180,
+
+                cutout: "75%",
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        enabled: false
+                    }
+                }
+            },
+
+            plugins: [{
+
+                id: "gaugeText",
+
+                beforeDraw(chart) {
+
+                    const { width, height, ctx } = chart;
+
+                    ctx.restore();
+
+                    const fontSize = (height / 120).toFixed(2);
+
+                    ctx.font = fontSize + "em Arial";
+                    ctx.textBaseline = "middle";
+
+                    const text = score + "%";
+
+                    const textX =
+                        Math.round((width - ctx.measureText(text).width) / 2);
+
+                    const textY = height / 1.3;
+
+                    ctx.fillText(text, textX, textY);
+
+                    ctx.save();
+                }
+
+            }]
+        });
+
+    }
+
+});
+
+    /* =========================
+       VALUE
+    ========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const counters = document.querySelectorAll(".count-up");
+
+    counters.forEach(counter => {
+        const target = parseFloat(counter.getAttribute("data-value"));
+        let current = 0;
+
+        const duration = 1000; // animation time (ms)
+        const stepTime = 20;
+
+        const increment = target / (duration / stepTime);
+
+        const isDecimal = target % 1 !== 0;
+
+        const timer = setInterval(() => {
+
+            current += increment;
+
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+
+            counter.textContent = isDecimal
+                ? current.toFixed(2)
+                : Math.floor(current);
+
+        }, stepTime);
+
+    });
+
+});
+</script>
+</body>
+</html>
