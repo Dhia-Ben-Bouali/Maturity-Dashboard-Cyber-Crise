@@ -22,6 +22,7 @@ ICON_MAP = {
     "Questions non-applicable": "img/8.png",
     "Score": "img/5.png",
     "Ponderation ": "img/6.png",
+    "Score Final": "img/9.png"
 }
 
 
@@ -117,7 +118,6 @@ def dashboard():
                     "icon": "img/5.png",
                     "is_number": False
                 })
-
         score_domain = values[5]
 
         yes = values[2]
@@ -142,10 +142,11 @@ def dashboard():
         ]
 
         maturity_label = "N/A"
-
+        scoremat = df.iloc[6, 6]
+        print("scoremat", scoremat)
         for level in maturity_levels:
 
-            if level["min"] <= score <= level["max"]:
+            if level["min"] <= scoremat <= level["max"]:
                 maturity_label = level["label"]
                 break
     # ======================================================
@@ -216,6 +217,7 @@ def dashboard():
 
             score_domain = round(float(values[5]) * 100, 1)
 
+
     # ======================================================
     # DOMAIN SCORES (ALL DOMAINS ROWS 2–7)
     # ======================================================
@@ -241,7 +243,8 @@ def dashboard():
         chart_data=chart_data,
         score_domain=score_domain,
         domain_scores=domain_scores,
-        maturity_label=maturity_label
+        maturity_label=maturity_label,
+        score=score
     )
 
 

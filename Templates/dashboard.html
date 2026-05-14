@@ -5,6 +5,8 @@
 <title>Dashboard</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -102,11 +104,6 @@
                         <div class="title">Maturity Level</div>
                         <div class="value">{{ maturity_label }}</div>
                     </div>
-                    <div class="maturity-progress-box">
-                        <div class="maturity-progress">
-                            <div class="maturity-progress-fill"></div>
-                        </div>
-                    </div>
             </div>
             {% endif %}
     </div>
@@ -134,9 +131,44 @@
 
             </div>
 
-        </div>
-
+        </div>       
     </div>
+    {% if active == "Result" %}
+    <div>
+        <ul class="step-wizard-list">
+
+            <li class="step-wizard-item {% if score <= 16 %}current-item{% endif %}">
+                <span class="progress-count">1</span>
+                <span class="progress-label">Incomplet</span>
+            </li>
+
+            <li class="step-wizard-item {% if score >= 17 and score <= 33 %}current-item{% endif %}">
+                <span class="progress-count">2</span>
+                <span class="progress-label">Exécuté</span>
+            </li>
+
+            <li class="step-wizard-item {% if score >= 34 and score <= 51 %}current-item{% endif %}">
+                <span class="progress-count">3</span>
+                <span class="progress-label">Maîtrisé</span>
+            </li>
+
+            <li class="step-wizard-item {% if score >= 52 and score <= 68 %}current-item{% endif %}">
+                <span class="progress-count">4</span>
+                <span class="progress-label">Établi</span>
+            </li>
+
+            <li class="step-wizard-item {% if score_domain >= 69 and score_domain <= 85 %}current-item{% endif %}">
+                <span class="progress-count">5</span>
+                <span class="progress-label">Prévisible</span>
+            </li>
+
+            <li class="step-wizard-item {% if score >= 86 %}current-item{% endif %}">
+                <span class="progress-count">6</span>
+                <span class="progress-label">Optimisé</span>
+            </li>
+        </ul>
+    </div>
+    {% endif %}
 </div>
 <!-- SCRIPT ALWAYS AT END -->
 <script>
