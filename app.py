@@ -155,6 +155,7 @@ def dashboard():
     else:
 
         domain_clean = domain.strip()
+        score=0
 
         row = df[df["Domaine"] == domain_clean]
 
