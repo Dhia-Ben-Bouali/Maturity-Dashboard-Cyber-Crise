@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
@@ -24,6 +25,8 @@ ICON_MAP = {
     "Ponderation ": "img/6.png",
     "Score Final": "img/9.png"
 }
+
+EXCEL_FOLDER = "Data"
 
 
 @app.route("/")
@@ -62,7 +65,8 @@ def dashboard():
         def fix(v):
             if isinstance(v, str):
                 return float(v.replace(",", "."))
-            return float(v)
+                
+            return round(v, 2)
 
         values = [
             fix(row[1]),
@@ -248,7 +252,19 @@ def dashboard():
         score=score
     )
 
+@app.route("/Home")
+def home():
+
+    excel_files = [
+        f for f in os.listdir(EXCEL_FOLDER)
+        if f.endswith(".xlsx") or f.endswith(".xls")
+    ]
+
+    return render_template(
+        "home.html",
+        excel_files=excel_files
+    )
 
 if __name__ == "__main__":
-    #app.run(debug=True, host="127.0.0.1", port=8000)
-    app.run()
+    app.run(debug=True, host="127.0.0.1", port=8000)
+    #app.run()

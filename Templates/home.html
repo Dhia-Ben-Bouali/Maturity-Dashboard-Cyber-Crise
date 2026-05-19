@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modern Layout</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">MyWebsite</div>
+
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <section class="main-container">
+
+        <div class="content-wrapper">
+
+            <!-- LEFT DIV -->
+            <div class="left-panel">
+                <h1>Plateforme d’Évaluation de la Maturité Cyber</h1>
+
+                <p>
+                    Mesurez, analysez et renforcez la préparation de votre organisation face
+                    aux crises cyber grâce à des évaluations avancées de maturité
+                </p>
+
+                <a href="#" class="btn">Explorer</a>
+            </div>
+
+            <!-- RIGHT DIV -->
+            <div class="right-panel">
+
+                <div class="card">
+                    <h2>Démarrer</h2>
+                    <p>
+                        Démarrer une nouvelle evaluation.
+                    </p>
+                </div>
+                <div class="card">
+                    <h2>Résultats de l'évaluation</h2>
+
+                    <p>
+                        Explorez les résultats des évaluations de maturité cyber des entreprises.
+                    </p>
+
+                    <div class="search-box">
+                        <label for="excelFile">Sélectionner une evaluation</label>
+
+                        <div class="search-row">
+                            <select id="excelFile" name="excelFile">
+                                <option value="">-- Choisir un fichier --</option>
+
+                                {% for file in excel_files %}
+                                    <option value="{{ file }}">{{ file }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="submit">Ouvrir</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</body>
+</html>
