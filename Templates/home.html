@@ -14,7 +14,7 @@
 
     <!-- NAVBAR -->
     <nav class="navbar">
-        <div class="logo">MyWebsite</div>
+        <div class="logo">EVACYBER</div>
 
         <ul class="nav-links">
             <li><a href="#">Home</a></li>
@@ -40,17 +40,24 @@
 
                 <a href="#" class="btn">Explorer</a>
             </div>
-
             <!-- RIGHT DIV -->
             <div class="right-panel">
 
+                <!-- START CARD -->
                 <div class="card">
                     <h2>Démarrer</h2>
+
                     <p>
-                        Démarrer une nouvelle evaluation.
+                        Démarrer une nouvelle évaluation.
                     </p>
+
+                    <button class="new-btn" onclick="openPopup()">
+                        Nouvelle évaluation
+                    </button>
                 </div>
-                <div class="card">
+
+                <!-- RESULT CARD -->
+                <div class="card result-card">
                     <h2>Résultats de l'évaluation</h2>
 
                     <p>
@@ -75,10 +82,70 @@
                 </div>
 
             </div>
+        
+            <!-- POPUP -->
+            <div class="popup-overlay" id="popup">
+                <div class="popup">
+
+                    <div class="popup-header">
+                        <h2>Nouvelle Évaluation</h2>
+
+                        <button class="close-btn" onclick="closePopup()">
+                            ×
+                        </button>
+                    </div>
+
+                    <form>
+
+                        <div class="input-group">
+                            <label>Nom de l'entreprise</label>
+                            <input type="text" placeholder="Entrer le nom de l'entreprise">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Date</label>
+                            <input type="date">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Nom de l'auditeur</label>
+                            <input type="text" placeholder="Entrer le nom de l'auditeur">
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            Créer l'évaluation
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+</div>
+
 
         </div>
-
     </section>
+<script>
+    function openPopup() {
+        document.getElementById("popup").style.display = "flex";
+    }
 
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+
+    /* Close popup when clicking outside */
+
+    window.onclick = function(event) {
+
+        const popup = document.getElementById("popup");
+
+        if (event.target === popup) {
+            popup.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>
+
+
