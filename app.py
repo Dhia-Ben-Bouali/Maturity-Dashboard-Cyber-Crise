@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+import shutil
 import pandas as pd
 import os
 
@@ -27,11 +28,26 @@ ICON_MAP = {
 }
 
 EXCEL_FOLDER = "Data"
+TEMPLATE_FILE = "Data/Default_Template.xlsx"
 
 
-@app.route("/")
-def dashboard():
+@app.route("/evaluation", methods=["POST"])
+def open_evaluation():
 
+    selected_file = request.form["excelFile"]
+
+    return redirect(
+        url_for(
+            "dashboard",
+            filename=selected_file
+        )
+    )
+
+
+@app.route("/evaluation/<filename>")
+def dashboard(filename):
+
+    file_path = os.path.join("Data", filename)
     domain = request.args.get("domain", "Gouvernance")
 
     cards = []
@@ -42,7 +58,7 @@ def dashboard():
     maturity_label = ""
 
     df = pd.read_excel(
-        "Data/LIVRABLE.xlsx",
+        file_path,
         sheet_name="FinalResult",
         header=0
     )
@@ -55,7 +71,7 @@ def dashboard():
     if domain == "Result":
 
         df_raw = pd.read_excel(
-            "Data/LIVRABLE.xlsx",
+            file_path,
             sheet_name="FinalResult",
             header=None
         )
@@ -249,7 +265,8 @@ def dashboard():
         score_domain=score_domain,
         domain_scores=domain_scores,
         maturity_label=maturity_label,
-        score=score
+        score=score,
+        selected_file=filename
     )
 
 @app.route("/Home")
@@ -264,6 +281,25 @@ def home():
         "home.html",
         excel_files=excel_files
     )
+
+@app.route("/create-evaluation", methods=["POST"])
+def create_evaluation():
+
+    entreprise = request.form.get("entreprise")
+    date = request.form.get("date")
+    auditor = request.form.get("auditor")
+
+    entreprise = entreprise.replace(" ", "_")
+    auditor = auditor.replace(" ", "_")
+
+    filename = f"{entreprise}_{date}_{auditor}.xlsx"
+
+    destination = os.path.join(EXCEL_FOLDER, filename)
+
+
+    shutil.copy(TEMPLATE_FILE, destination)
+
+    return redirect("/Home")
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=8000)

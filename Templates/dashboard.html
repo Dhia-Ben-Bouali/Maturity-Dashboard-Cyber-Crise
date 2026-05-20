@@ -1,436 +1,466 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
 
+  <body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <a href="/Home" class="home-link"> Home </a>
 
-</head>
-
-<body>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-    <h2>Domains</h2>
-
-    <a href="/?domain=Forensics" class="{% if active=='Forensics' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Forensics"
+        class="{% if active=='Forensics' %}active{% endif %}"
+      >
         Forensics
-    </a>
+      </a>
 
-    <a href="/?domain=Continuité d’activité" class="{% if active=='Continuité d’activité' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Continuité d’activité"
+        class="{% if active=='Continuité d’activité' %}active{% endif %}"
+      >
         Continuité d’activité
-    </a>
+      </a>
 
-    <a href="/?domain=Gestion de crise" class="{% if active=='Gestion de crise' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Gestion de crise"
+        class="{% if active=='Gestion de crise' %}active{% endif %}"
+      >
         Gestion de crise
-    </a>
+      </a>
 
-    <a href="/?domain=Gestion Incidents" class="{% if active=='Gestion Incidents' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Gestion Incidents"
+        class="{% if active=='Gestion Incidents' %}active{% endif %}"
+      >
         Gestion Incidents
-    </a>
+      </a>
 
-    <a  href="/?domain=Confirmitee" class="{% if active=='Conformité' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Confirmitee"
+        class="{% if active=='Conformité' %}active{% endif %}"
+      >
         Conformité
-    </a>
+      </a>
 
-    <a href="/?domain=Gouvernance" class="{% if active=='Gouvernance' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Gouvernance"
+        class="{% if active=='Gouvernance' %}active{% endif %}"
+      >
         Gouvernance
-    </a>
+      </a>
 
-    <hr>
+      <hr />
 
-    <a href="/?domain=Result" class="{% if active=='Result' %}active{% endif %}">
+      <a
+        href="/evaluation/{{ selected_file }}?domain=Result"
+        class="{% if active=='Result' %}active{% endif %}"
+      >
         Result
-    </a>
-
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-    <div class="page-header">
-        <div class="page-title">
-            {{ active }}
-        </div>
-
-        <div class="page-badge">
-            Active Domain
-        </div>
+      </a>
     </div>
 
-    <!-- =========================
+    <!-- MAIN -->
+    <div class="main">
+      <div class="page-header">
+        <div class="page-title">{{ active }}</div>
+
+        <div class="page-badge">Active Domain</div>
+      </div>
+
+      <!-- =========================
          2-COLUMN LAYOUT
     ========================== -->
-    <div class="dashboard-layout">
-
+      <div class="dashboard-layout">
         <!-- LEFT SIDE: GRAPHS -->
-    <div class="left-panel">
-        <div class="graphs-row">
-
+        <div class="left-panel">
+          <div class="graphs-row">
             <div class="graph-card">
-                <div class="graph-title">Response Distribution</div>
-                <div class="graph-container">
-                    <canvas id="pieChart"></canvas>
-                </div>
+              <div class="graph-title">Response Distribution</div>
+              <div class="graph-container">
+                <canvas id="pieChart"></canvas>
+              </div>
             </div>
 
             <div class="graph-card">
-                <div class="graph-title">Domain Score</div>
-                <div class="gauge-container">
-                    <canvas id="gaugeChart"></canvas>
-                </div>
+              <div class="graph-title">Domain Score</div>
+              <div class="gauge-container">
+                <canvas id="gaugeChart"></canvas>
+              </div>
             </div>
+          </div>
 
+          <!-- NEW ROW: ALL DOMAIN SCORES -->
+          {% if active == "Result" %}
+          <div class="graphs-row">
+            <div class="graph-card" style="width: 100%">
+              <div class="graph-title">Domain Maturity Radar</div>
+              <div class="graph-container">
+                <canvas id="radarChart"></canvas>
+              </div>
+            </div>
+            <div
+              class="card2 maturity-card"
+              data-maturity="{{ maturity_label }}"
+            >
+              <div class="title">Maturity Level</div>
+              <div class="value">{{ maturity_label }}</div>
+            </div>
+          </div>
+          {% endif %}
         </div>
-
-        <!-- NEW ROW: ALL DOMAIN SCORES -->
-        {% if active == "Result" %}
-            <div class="graphs-row">
-
-                <div class="graph-card" style="width: 100%;">
-                    <div class="graph-title">Domain Maturity Radar</div>
-                    <div class="graph-container">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                </div>
-                    <div class="card2 maturity-card" data-maturity="{{ maturity_label }}">
-                        <div class="title">Maturity Level</div>
-                        <div class="value">{{ maturity_label }}</div>
-                    </div>
-            </div>
-            {% endif %}
-    </div>
 
         <!-- RIGHT SIDE: KPI CARDS -->
         <div class="right-panel">
-
-            <div class="kpi-grid">
-
-                {% for card in cards %}
-                <div class="card">
-
-                    <div class="title">
-                        <span class="title-text">{{ card.title }}</span>
-                        <span class="title-icon">
-                                <img src="{{ url_for('static', filename=card.icon) }}" />
-                        </span>
-                    </div>
-                        <div class="value"
-                            {% if card.is_number %}count-up data-value="{{ card.value }}"{% endif %}>
-                            {{ card.value }}
-                        </div>
-                </div>
-                {% endfor %}
-
+          <div class="kpi-grid">
+            {% for card in cards %}
+            <div class="card">
+              <div class="title">
+                <span class="title-text">{{ card.title }}</span>
+                <span class="title-icon">
+                  <img src="{{ url_for('static', filename=card.icon) }}" />
+                </span>
+              </div>
+              <div
+                class="value"
+                {%
+                if
+                card.is_number
+                %}count-up
+                data-value="{{ card.value }}"
+                {%
+                endif
+                %}
+              >
+                {{ card.value }}
+              </div>
             </div>
-
-        </div>       
-    </div>
-    {% if active == "Result" %}
-    <div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% if active == "Result" %}
+      <div>
         <ul class="step-wizard-list">
+          <li
+            class="step-wizard-item {% if score <= 16 %}current-item{% endif %}"
+          >
+            <span class="progress-count">1</span>
+            <span class="progress-label">Incomplet</span>
+          </li>
 
-            <li class="step-wizard-item {% if score <= 16 %}current-item{% endif %}">
-                <span class="progress-count">1</span>
-                <span class="progress-label">Incomplet</span>
-            </li>
+          <li
+            class="step-wizard-item {% if score >= 17 and score <= 33 %}current-item{% endif %}"
+          >
+            <span class="progress-count">2</span>
+            <span class="progress-label">Exécuté</span>
+          </li>
 
-            <li class="step-wizard-item {% if score >= 17 and score <= 33 %}current-item{% endif %}">
-                <span class="progress-count">2</span>
-                <span class="progress-label">Exécuté</span>
-            </li>
+          <li
+            class="step-wizard-item {% if score >= 34 and score <= 51 %}current-item{% endif %}"
+          >
+            <span class="progress-count">3</span>
+            <span class="progress-label">Maîtrisé</span>
+          </li>
 
-            <li class="step-wizard-item {% if score >= 34 and score <= 51 %}current-item{% endif %}">
-                <span class="progress-count">3</span>
-                <span class="progress-label">Maîtrisé</span>
-            </li>
+          <li
+            class="step-wizard-item {% if score >= 52 and score <= 68 %}current-item{% endif %}"
+          >
+            <span class="progress-count">4</span>
+            <span class="progress-label">Établi</span>
+          </li>
 
-            <li class="step-wizard-item {% if score >= 52 and score <= 68 %}current-item{% endif %}">
-                <span class="progress-count">4</span>
-                <span class="progress-label">Établi</span>
-            </li>
+          <li
+            class="step-wizard-item {% if score_domain >= 69 and score_domain <= 85 %}current-item{% endif %}"
+          >
+            <span class="progress-count">5</span>
+            <span class="progress-label">Prévisible</span>
+          </li>
 
-            <li class="step-wizard-item {% if score_domain >= 69 and score_domain <= 85 %}current-item{% endif %}">
-                <span class="progress-count">5</span>
-                <span class="progress-label">Prévisible</span>
-            </li>
-
-            <li class="step-wizard-item {% if score >= 86 %}current-item{% endif %}">
-                <span class="progress-count">6</span>
-                <span class="progress-label">Optimisé</span>
-            </li>
+          <li
+            class="step-wizard-item {% if score >= 86 %}current-item{% endif %}"
+          >
+            <span class="progress-count">6</span>
+            <span class="progress-label">Optimisé</span>
+          </li>
         </ul>
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
-</div>
-<!-- SCRIPT ALWAYS AT END -->
-<script>
-    
-document.addEventListener("DOMContentLoaded", function () {
+    <!-- SCRIPT ALWAYS AT END -->
+    <script>
 
-    /* =========================
-       DONUT CHART
-    ========================== */
+      document.addEventListener("DOMContentLoaded", function () {
 
-    const pieCanvas = document.getElementById("pieChart");
+          /* =========================
+             DONUT CHART
+          ========================== */
 
-    if (pieCanvas) {
+          const pieCanvas = document.getElementById("pieChart");
 
-        new Chart(pieCanvas, {
+          if (pieCanvas) {
 
-            type: "doughnut",
+              new Chart(pieCanvas, {
 
-            data: {
-                labels: ["Yes", "No", "N/A"],
+                  type: "doughnut",
 
-                datasets: [{
-                    data: [
-                        {{ chart_data.yes|default(0) }},
-                        {{ chart_data.no|default(0) }},
-                        {{ chart_data.na|default(0) }}
-                    ]
-                }]
-            },
+                  data: {
+                      labels: ["Yes", "No", "N/A"],
 
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                      datasets: [{
+                          data: [
+                              {{ chart_data.yes|default(0) }},
+                              {{ chart_data.no|default(0) }},
+                              {{ chart_data.na|default(0) }}
+                          ]
+                      }]
+                  },
 
-                cutout: "70%",
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
 
-                plugins: {
-                    legend: {
-                        position: "bottom"
-                    },
+                      cutout: "70%",
 
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ": " + context.raw + "%";
-                            }
-                        }
-                    }
-                }
-            }
+                      plugins: {
+                          legend: {
+                              position: "bottom"
+                          },
 
-        });
+                          tooltip: {
+                              callbacks: {
+                                  label: function(context) {
+                                      return context.label + ": " + context.raw + "%";
+                                  }
+                              }
+                          }
+                      }
+                  }
 
-    }
+              });
 
-    /* =========================
-       GAUGE CHART
-    ========================== */
+          }
 
-    const gaugeCanvas = document.getElementById("gaugeChart");
+          /* =========================
+             GAUGE CHART
+          ========================== */
 
-    if (gaugeCanvas) {
+          const gaugeCanvas = document.getElementById("gaugeChart");
 
-        const score = {{ score_domain|default(0) }};
+          if (gaugeCanvas) {
 
-        new Chart(gaugeCanvas, {
+              const score = {{ score_domain|default(0) }};
 
-            type: "doughnut",
+              new Chart(gaugeCanvas, {
 
-            data: {
-                datasets: [{
-                    data: [score, 100 - score]
-                }]
-            },
+                  type: "doughnut",
 
-            options: {
+                  data: {
+                      datasets: [{
+                          data: [score, 100 - score]
+                      }]
+                  },
 
-                responsive: true,
-                maintainAspectRatio: false,
+                  options: {
 
-                rotation: -90,
-                circumference: 180,
+                      responsive: true,
+                      maintainAspectRatio: false,
 
-                cutout: "75%",
+                      rotation: -90,
+                      circumference: 180,
 
-                plugins: {
-                    legend: {
-                        display: false
-                    },
+                      cutout: "75%",
 
-                    tooltip: {
-                        enabled: false
-                    }
-                }
-            },
+                      plugins: {
+                          legend: {
+                              display: false
+                          },
 
-            plugins: [{
+                          tooltip: {
+                              enabled: false
+                          }
+                      }
+                  },
 
-                id: "gaugeText",
+                  plugins: [{
 
-                beforeDraw(chart) {
+                      id: "gaugeText",
 
-                    const { width, height, ctx } = chart;
+                      beforeDraw(chart) {
 
-                    ctx.restore();
+                          const { width, height, ctx } = chart;
 
-                    const fontSize = (height / 120).toFixed(2);
+                          ctx.restore();
 
-                    ctx.font = fontSize + "em Arial";
-                    ctx.textBaseline = "middle";
+                          const fontSize = (height / 120).toFixed(2);
 
-                    const text = score + "%";
+                          ctx.font = fontSize + "em Arial";
+                          ctx.textBaseline = "middle";
 
-                    const textX =
-                        Math.round((width - ctx.measureText(text).width) / 2);
+                          const text = score + "%";
 
-                    const textY = height / 1.3;
+                          const textX =
+                              Math.round((width - ctx.measureText(text).width) / 2);
 
-                    ctx.fillText(text, textX, textY);
+                          const textY = height / 1.3;
 
-                    ctx.save();
-                }
+                          ctx.fillText(text, textX, textY);
 
-            }]
-        });
+                          ctx.save();
+                      }
 
-    }
+                  }]
+              });
 
-});
+          }
 
-    /* =========================
-       VALUE
-    ========================== */
+      });
 
-document.addEventListener("DOMContentLoaded", () => {
+          /* =========================
+             VALUE
+          ========================== */
 
-    const counters = document.querySelectorAll(".count-up");
+      document.addEventListener("DOMContentLoaded", () => {
 
-    counters.forEach(counter => {
-        const target = parseFloat(counter.getAttribute("data-value"));
-        let current = 0;
+          const counters = document.querySelectorAll(".count-up");
 
-        const duration = 1000; // animation time (ms)
-        const stepTime = 20;
+          counters.forEach(counter => {
+              const target = parseFloat(counter.getAttribute("data-value"));
+              let current = 0;
 
-        const increment = target / (duration / stepTime);
+              const duration = 1000; // animation time (ms)
+              const stepTime = 20;
 
-        const isDecimal = target % 1 !== 0;
+              const increment = target / (duration / stepTime);
 
-        const timer = setInterval(() => {
+              const isDecimal = target % 1 !== 0;
 
-            current += increment;
+              const timer = setInterval(() => {
 
-            if (current >= target) {
-                current = target;
-                clearInterval(timer);
-            }
+                  current += increment;
 
-            counter.textContent = isDecimal
-                ? current.toFixed(2)
-                : Math.floor(current);
+                  if (current >= target) {
+                      current = target;
+                      clearInterval(timer);
+                  }
 
-        }, stepTime);
+                  counter.textContent = isDecimal
+                      ? current.toFixed(2)
+                      : Math.floor(current);
 
-    });
+              }, stepTime);
 
-});
+          });
 
+      });
 
-const domainScores = {{ domain_scores|tojson }};
 
-// allowed domains only
-const allowed = [
-    "Forensics",
-    "Continuité d’activité",
-    "Gestion de crise",
-    "Gestion Incidents",
-    "Confirmitee",
-    "Gouvernance"
-];
+      const domainScores = {{ domain_scores|tojson }};
 
-const filtered = domainScores.filter(d => allowed.includes(d.domain));
+      // allowed domains only
+      const allowed = [
+          "Forensics",
+          "Continuité d’activité",
+          "Gestion de crise",
+          "Gestion Incidents",
+          "Confirmitee",
+          "Gouvernance"
+      ];
 
-const labels = filtered.map(d => d.domain);
-const data = filtered.map(d => d.score);
+      const filtered = domainScores.filter(d => allowed.includes(d.domain));
 
-const radarCtx = document.getElementById("radarChart");
+      const labels = filtered.map(d => d.domain);
+      const data = filtered.map(d => d.score);
 
-if (radarCtx) {
+      const radarCtx = document.getElementById("radarChart");
 
-    new Chart(radarCtx, {
-        type: "radar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Maturity Score (%)",
-                data: data,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    beginAtZero: true,
-                    max: 100
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
+      if (radarCtx) {
 
-}
+          new Chart(radarCtx, {
+              type: "radar",
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: "Maturity Score (%)",
+                      data: data,
+                      fill: true
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      r: {
+                          beginAtZero: true,
+                          max: 100
+                      }
+                  },
+                  plugins: {
+                      legend: {
+                          display: false
+                      }
+                  }
+              }
+          });
 
+      }
 
 
-document.addEventListener("DOMContentLoaded", function () {
 
-    const levelMap = {
-        "Incomplet": 16,
-        "Exécuté": 33,
-        "Maîtrisé": 51,
-        "Établi": 68,
-        "Prévisible": 85,
-        "Optimisé": 100
-    };
+      document.addEventListener("DOMContentLoaded", function () {
 
-    document.querySelectorAll(".maturity-card").forEach(card => {
+          const levelMap = {
+              "Incomplet": 16,
+              "Exécuté": 33,
+              "Maîtrisé": 51,
+              "Établi": 68,
+              "Prévisible": 85,
+              "Optimisé": 100
+          };
 
-        const level = card.getAttribute("data-maturity")?.trim();
+          document.querySelectorAll(".maturity-card").forEach(card => {
 
-        console.log("MATURITY:", level); // DEBUG
+              const level = card.getAttribute("data-maturity")?.trim();
 
-        const progress = levelMap[level];
+              console.log("MATURITY:", level); // DEBUG
 
-        const bar = card.querySelector(".maturity-progress-fill");
+              const progress = levelMap[level];
 
-        if (!bar) {
-            console.log("BAR NOT FOUND");
-            return;
-        }
+              const bar = card.querySelector(".maturity-progress-fill");
 
-        if (progress !== undefined) {
+              if (!bar) {
+                  console.log("BAR NOT FOUND");
+                  return;
+              }
 
-            bar.style.width = progress + "%";
+              if (progress !== undefined) {
 
-            if (progress <= 16) bar.style.background = "#ef4444";
-            else if (progress <= 33) bar.style.background = "#f59e0b";
-            else if (progress <= 51) bar.style.background = "#fbbf24";
-            else if (progress <= 68) bar.style.background = "#22c55e";
-            else if (progress <= 85) bar.style.background = "#3b82f6";
-            else bar.style.background = "#4f46e5";
-        }
+                  bar.style.width = progress + "%";
 
-    });
+                  if (progress <= 16) bar.style.background = "#ef4444";
+                  else if (progress <= 33) bar.style.background = "#f59e0b";
+                  else if (progress <= 51) bar.style.background = "#fbbf24";
+                  else if (progress <= 68) bar.style.background = "#22c55e";
+                  else if (progress <= 85) bar.style.background = "#3b82f6";
+                  else bar.style.background = "#4f46e5";
+              }
 
-});
-</script>
-</body>
+          });
+
+      });
+    </script>
+  </body>
 </html>
