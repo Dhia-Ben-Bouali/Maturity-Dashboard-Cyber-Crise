@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for,  make_response
+from weasyprint import HTML
 import shutil
 import pandas as pd
 import os
@@ -30,6 +31,10 @@ ICON_MAP = {
 EXCEL_FOLDER = "Data"
 TEMPLATE_FILE = "Data/Default_Template.xlsx"
 
+# Default route
+@app.route("/")
+def index():
+    return redirect(url_for("home"))
 
 @app.route("/evaluation", methods=["POST"])
 def open_evaluation():
@@ -300,6 +305,33 @@ def create_evaluation():
     shutil.copy(TEMPLATE_FILE, destination)
 
     return redirect("/Home")
+
+@app.route('/generate-report')
+def generate_report():
+
+    data = {
+        "total_questions": 92,
+        "applicable": 87,
+        "conforme": 74,
+        "non_conforme": 8,
+        "score_final": 81,
+        "maturity": "Prévisible"
+    }
+
+    rendered = render_template(
+        'Report.html',
+        data=data
+    )
+
+    pdf = HTML(string=rendered).write_pdf()
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = (
+        'inline; filename=assessment_report.pdf'
+    )
+
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=8000)

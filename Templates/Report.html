@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 40px;
+      }
+
+      h1 {
+        color: #1e293b;
+      }
+
+      .card {
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+      }
+
+      th {
+        background: #f1f5f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cyber Crisis Maturity Report</h1>
+
+    <div class="card">
+      <h2>Global Results</h2>
+
+      <table>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+        </tr>
+
+        <tr>
+          <td>Total Questions</td>
+          <td>{{ data.total_questions }}</td>
+        </tr>
+
+        <tr>
+          <td>Applicable Questions</td>
+          <td>{{ data.applicable }}</td>
+        </tr>
+
+        <tr>
+          <td>Conforme</td>
+          <td>{{ data.conforme }}</td>
+        </tr>
+
+        <tr>
+          <td>Non Conforme</td>
+          <td>{{ data.non_conforme }}</td>
+        </tr>
+
+        <tr>
+          <td>Final Score</td>
+          <td>{{ data.score_final }}%</td>
+        </tr>
+
+        <tr>
+          <td>Maturity</td>
+          <td>{{ data.maturity }}</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
