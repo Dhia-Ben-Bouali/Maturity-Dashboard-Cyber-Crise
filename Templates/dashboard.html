@@ -71,7 +71,9 @@
       >
         Result
       </a>
-      <a href="/generate-report"> Download PDF Report </a>
+      <a href="{{ url_for('generate_report', filename=selected_file) }}">
+        Download PDF Report
+      </a>
     </div>
 
     <!-- MAIN -->

@@ -6,6 +6,10 @@ import os
 
 app = Flask(__name__)
 
+
+    # ======================================================
+    # Function Definition 
+    # ======================================================
 def format_value(v):
 
     if isinstance(v, (int,)) or (isinstance(v, float) and v.is_integer()):
@@ -16,7 +20,62 @@ def format_value(v):
 
     return v
 
+def get_result_data(file_path):
 
+    df_raw = pd.read_excel(
+        file_path,
+        sheet_name="FinalResult",
+        header=None
+    )
+
+    row = df_raw.iloc[7]
+
+    def fix(v):
+        if isinstance(v, str):
+            return float(v.replace(",", "."))
+        return round(float(v), 2)
+
+    values = [
+        fix(row[1]),  # Total Questions
+        fix(row[2]),  # Applicable
+        fix(row[3]),  # Conforme
+        fix(row[4]),  # Non Conforme
+        fix(row[5]),  # Non Applicable
+        fix(row[6]),  # Score Final
+    ]
+
+    maturity_levels = [
+        {"label": "Incomplet", "min": 0, "max": 16},
+        {"label": "Exécuté", "min": 17, "max": 33},
+        {"label": "Maîtrisé", "min": 34, "max": 51},
+        {"label": "Établi", "min": 52, "max": 68},
+        {"label": "Prévisible", "min": 69, "max": 85},
+        {"label": "Optimisé", "min": 86, "max": 100},
+    ]
+
+    scoremat = df_raw.iloc[6, 6] *100
+    print(scoremat)
+
+    maturity = "N/A"
+
+    for level in maturity_levels:
+        if level["min"] <= scoremat <= level["max"]:
+            maturity = level["label"]
+            break
+
+    return {
+        "total_questions": int(values[0]),
+        "applicable": int(values[1]),
+        "conforme": int(values[2]),
+        "non_conforme": int(values[3]),
+        "non_applicable": int(values[4]),
+        "score_final": round(values[5], 1),
+        "maturity": maturity
+    }
+
+    # ======================================================
+    # CONST
+    # ======================================================
 ICON_MAP = {
     "Nombre Des Questions": "img/1.png",
     "Questions Applicable": "img/3.png",
@@ -306,17 +365,15 @@ def create_evaluation():
 
     return redirect("/Home")
 
-@app.route('/generate-report')
-def generate_report():
+@app.route('/generate-report/<filename>')
+def generate_report(filename):
 
-    data = {
-        "total_questions": 92,
-        "applicable": 87,
-        "conforme": 74,
-        "non_conforme": 8,
-        "score_final": 81,
-        "maturity": "Prévisible"
-    }
+    file_path = os.path.join("Data", filename)
+
+    if not os.path.exists(file_path):
+        return "File not found", 404
+
+    data = get_result_data(file_path)
 
     rendered = render_template(
         'Report.html',
@@ -328,7 +385,7 @@ def generate_report():
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = (
-        'inline; filename=assessment_report.pdf'
+        f'inline; filename="{filename}_report.pdf"'
     )
 
     return response
