@@ -35,47 +35,29 @@
     </style>
   </head>
   <body>
-    <h1>Cyber Crisis Maturity Report</h1>
+    <h2>Summary</h2>
 
-    <div class="card">
-      <h2>Global Results</h2>
+    {% for card in cards %}
+    <div><strong>{{ card.title }}</strong> : {{ card.value }}</div>
+    {% endfor %}
 
-      <table>
-        <tr>
-          <th>Metric</th>
-          <th>Value</th>
-        </tr>
+    <h2>Maturity Level</h2>
+    <p>{{ maturity_label }}</p>
 
-        <tr>
-          <td>Total Questions</td>
-          <td>{{ data.total_questions }}</td>
-        </tr>
+    <h2>Domain Scores</h2>
 
-        <tr>
-          <td>Applicable Questions</td>
-          <td>{{ data.applicable }}</td>
-        </tr>
+    <table>
+      <tr>
+        <th>Domain</th>
+        <th>Score</th>
+      </tr>
 
-        <tr>
-          <td>Conforme</td>
-          <td>{{ data.conforme }}</td>
-        </tr>
-
-        <tr>
-          <td>Non Conforme</td>
-          <td>{{ data.non_conforme }}</td>
-        </tr>
-
-        <tr>
-          <td>Final Score</td>
-          <td>{{ data.score_final }}%</td>
-        </tr>
-
-        <tr>
-          <td>Maturity</td>
-          <td>{{ data.maturity }}</td>
-        </tr>
-      </table>
-    </div>
+      {% for domain in domain_scores %}
+      <tr>
+        <td>{{ domain.domain }}</td>
+        <td>{{ domain.score }} %</td>
+      </tr>
+      {% endfor %}
+    </table>
   </body>
 </html>

@@ -373,11 +373,124 @@ def generate_report(filename):
     if not os.path.exists(file_path):
         return "File not found", 404
 
-    data = get_result_data(file_path)
+    cards = []
+    chart_data = {}
+    maturity_label = ""
+
+    df = pd.read_excel(
+        file_path,
+        sheet_name="FinalResult",
+        header=0
+    )
+
+    df_raw = pd.read_excel(
+        file_path,
+        sheet_name="FinalResult",
+        header=None
+    )
+
+    row = df_raw.iloc[7]
+
+    def fix(v):
+        if isinstance(v, str):
+            return float(v.replace(",", "."))
+        return round(float(v), 2)
+
+    values = [
+        fix(row[1]),  # Total Questions
+        fix(row[2]),  # Applicable
+        fix(row[3]),  # Conforme
+        fix(row[4]),  # Non Conforme
+        fix(row[5]),  # Non Applicable
+        fix(row[6]),  # Score Final
+    ]
+
+    titles = [
+        "Total Questions",
+        "Questions Applicable",
+        "Conforme",
+        "Non Conforme",
+        "Questions non-applicable",
+        "Score Final",
+    ]
+
+    # Main cards
+    for t, v in zip(titles, values):
+
+        cards.append({
+            "title": t,
+            "value": int(v) if isinstance(v, (int, float)) else v
+        })
+
+    # Domain scores
+    allowed_domains = [
+        "Forensics",
+        "Continuité d’activité",
+        "Gestion de crise",
+        "Gestion Incidents",
+        "Confirmitee",
+        "Gouvernance"
+    ]
+
+    domain_scores = []
+
+    for _, r in df.iterrows():
+
+        domain_name = str(r["Domaine"]).strip()
+
+        if domain_name in allowed_domains:
+
+            score = r["ScoreDomain"]
+
+            if isinstance(score, str):
+                score = float(score.replace(",", "."))
+
+            score = round(float(score) * 100, 1)
+
+            domain_scores.append({
+                "domain": domain_name,
+                "score": score
+            })
+
+    # Chart data
+    yes = values[2]
+    no = values[3]
+    na = values[4]
+
+    total = yes + no + na
+
+    chart_data = {
+        "yes": round((yes / total) * 100, 1) if total else 0,
+        "no": round((no / total) * 100, 1) if total else 0,
+        "na": round((na / total) * 100, 1) if total else 0
+    }
+
+    # Maturity
+    maturity_levels = [
+        {"label": "Incomplet", "min": 0, "max": 16},
+        {"label": "Exécuté", "min": 17, "max": 33},
+        {"label": "Maîtrisé", "min": 34, "max": 51},
+        {"label": "Établi", "min": 52, "max": 68},
+        {"label": "Prévisible", "min": 69, "max": 85},
+        {"label": "Optimisé", "min": 86, "max": 100},
+    ]
+
+    scoremat = float(df.iloc[6, 6])
+
+    maturity_label = "N/A"
+
+    for level in maturity_levels:
+        if level["min"] <= scoremat <= level["max"]:
+            maturity_label = level["label"]
+            break
 
     rendered = render_template(
-        'Report.html',
-        data=data
+        "Report.html",
+        cards=cards,
+        domain_scores=domain_scores,
+        chart_data=chart_data,
+        maturity_label=maturity_label,
+        filename=filename
     )
 
     pdf = HTML(string=rendered).write_pdf()
