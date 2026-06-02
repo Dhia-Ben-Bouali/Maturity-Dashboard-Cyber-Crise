@@ -2,8 +2,77 @@
 <html>
   <head>
     <meta charset="utf-8" />
-
+    <title>Result</title>
     <style>
+      @page {
+        size: A4;
+        margin-top: 110px;
+        margin-bottom: 70px;
+        margin-left: 25px;
+        margin-right: 25px;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      /* HEADER */
+
+      .header {
+        position: fixed;
+        top: -80px;
+        left: 0;
+        right: 0;
+
+        height: 60px;
+
+        border-bottom: 2px solid #2563eb;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        width: 20%;
+      }
+
+      .header-center {
+        width: 60%;
+        text-align: center;
+      }
+
+      .header-center h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .header-right {
+        width: 20%;
+        text-align: right;
+        font-size: 12px;
+      }
+
+      /* FOOTER */
+
+      .footer {
+        position: fixed;
+
+        bottom: -50px;
+        left: 0;
+        right: 0;
+
+        height: 40px;
+
+        border-top: 1px solid #d1d5db;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        font-size: 11px;
+        color: #666;
+      }
       body {
         font-family: Arial, sans-serif;
         margin: 40px;
@@ -136,48 +205,203 @@
         font-size: 12px;
         font-weight: bold;
       }
+      .summary-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 25px;
+        margin-bottom: 30px;
+      }
+
+      .summary-card {
+        width: 30%;
+        border: 1px solid #d9d9d9;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        background: #fafafa;
+      }
+
+      .summary-title {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .summary-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1f2937;
+      }
+
+      .score-card {
+        background: #eef4ff;
+        border: 2px solid #2563eb;
+      }
+
+      .maturity-section {
+        border: 1px solid #d9d9d9;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        margin-bottom: 35px;
+      }
+
+      .maturity-score {
+        font-size: 48px;
+        font-weight: bold;
+        color: #2563eb;
+        margin-bottom: 15px;
+      }
+
+      .maturity-details h3 {
+        margin-bottom: 10px;
+      }
+
+      .maturity-badge {
+        display: inline-block;
+        padding: 10px 25px;
+        border-radius: 25px;
+        background: #e8f0ff;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .page-number:after {
+        content: " " counter(page) " / " counter(pages);
+      }
+      .introduction {
+        margin-top: 20px;
+        margin-bottom: 35px;
+        padding: 20px;
+        background: #f8fafc;
+        border-left: 5px solid #2563eb;
+        border-radius: 8px;
+      }
+
+      .introduction h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        text-align: left;
+      }
+
+      .introduction p {
+        line-height: 1.7;
+        text-align: justify;
+        margin-bottom: 10px;
+        color: #374151;
+      }
+      .scope-box {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+      }
+
+      .scope-box h3 {
+        margin-top: 0;
+      }
+
+      .scope-box ul {
+        margin: 0;
+        padding-left: 20px;
+      }
     </style>
   </head>
-
   <body>
-    <h1>Cyber Crisis Maturity Assessment Report</h1>
+    <div class="header">
+      <div class="header-left">
+        <img src="static/img/logo.png" height="50" />
+      </div>
 
-    <h2>Global Results</h2>
+      <div class="header-center">
+        <h2>Cyber Crisis Maturity Assessment Report</h2>
+      </div>
 
-    <div class="summary">
-      <p><strong>Total Questions:</strong> {{ summary.total_questions }}</p>
+      <div class="header-right">{{ filename }}</div>
+    </div>
+    <div class="introduction">
+      <h2>Introduction</h2>
 
       <p>
-        <strong>Questions Applicable:</strong>
-        {{ summary.applicable }}
+        This report presents the results of the Cyber Crisis Maturity Assessment
+        conducted to evaluate the organization's preparedness, resilience, and
+        governance capabilities in managing cyber incidents and crisis
+        situations.
       </p>
 
       <p>
-        <strong>Conforme:</strong>
-        {{ summary.yes }}
+        The assessment measures maturity across six key domains:
+        <strong>Governance</strong>, <strong>Crisis Management</strong>,
+        <strong>Business Continuity</strong>,
+        <strong>Incident Management</strong>, <strong>Forensics</strong>, and
+        <strong>Compliance</strong>.
       </p>
 
       <p>
-        <strong>Non Conforme:</strong>
-        {{ summary.no }}
+        Each domain is evaluated through a structured questionnaire and scored
+        according to predefined maturity criteria. The resulting maturity level
+        provides an overview of the organization's current capabilities and
+        identifies areas for improvement.
       </p>
 
       <p>
-        <strong>Questions Non Applicable:</strong>
-        {{ summary.na }}
+        The following sections summarize the overall assessment results and
+        provide a detailed analysis for each evaluated domain.
       </p>
     </div>
+    <div class="scope-box">
+      <h3>Assessment Scope</h3>
 
-    <div class="score-box">
-      <p>
-        <strong>Final Score :</strong>
-        {{ summary.score_final }} %
-      </p>
+      <ul>
+        <li>Cyber Crisis Governance</li>
+        <li>Crisis Management</li>
+        <li>Business Continuity</li>
+        <li>Incident Management</li>
+        <li>Digital Forensics</li>
+        <li>Compliance and Regulatory Requirements</li>
+      </ul>
+    </div>
+    <h2>Global Assessment Results</h2>
 
-      <p>
-        <strong>Maturity Level :</strong>
-        {{ maturity_label }}
-      </p>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-title">Total Questions</div>
+        <div class="summary-value">{{ summary.total_questions }}</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-title">Applicable</div>
+        <div class="summary-value">{{ summary.applicable }}</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-title">Conforme</div>
+        <div class="summary-value">{{ summary.yes }}</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-title">Non Conforme</div>
+        <div class="summary-value">{{ summary.no }}</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-title">N/A</div>
+        <div class="summary-value">{{ summary.na }}</div>
+      </div>
+
+      <div class="summary-card score-card">
+        <div class="summary-title">Final Score</div>
+        <div class="summary-value">
+          {{ "%.2f"|format(summary.score_final) }}%
+        </div>
+      </div>
+    </div>
+    <div class="maturity-section">
+      <div class="maturity-details">
+        <h3>Maturity Level</h3>
+        <div class="maturity-badge">{{ maturity_label }}</div>
+      </div>
     </div>
     <h2>Domain Assessment Details</h2>
 
@@ -238,6 +462,12 @@
       </div>
 
       {% endfor %}
+    </div>
+    <div class="footer">
+      <div>Confidential Report</div>
+
+      <div>Generated by EVACYBER</div>
+      <div class="page-number">Page</div>
     </div>
   </body>
 </html>
