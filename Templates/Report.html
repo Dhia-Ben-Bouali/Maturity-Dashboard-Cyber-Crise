@@ -1,63 +1,243 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
+
     <style>
       body {
-        font-family: Arial;
-        padding: 40px;
+        font-family: Arial, sans-serif;
+        margin: 40px;
       }
 
-      h1 {
-        color: #1e293b;
-      }
-
-      .card {
-        border: 1px solid #ccc;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 10px;
+      h1,
+      h2 {
+        text-align: center;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 20px;
       }
 
       th,
       td {
-        border: 1px solid #ddd;
-        padding: 10px;
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: center;
       }
 
       th {
-        background: #f1f5f9;
+        background: #f0f0f0;
+      }
+
+      .summary {
+        margin-top: 20px;
+      }
+
+      .summary p {
+        font-size: 16px;
+        margin: 5px 0;
+      }
+
+      .score-box {
+        margin-top: 25px;
+        padding: 15px;
+        border: 1px solid #000;
+      }
+      h2 {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 25px;
+        color: #1f2937;
+      }
+
+      .domains-grid {
+        width: 100%;
+      }
+
+      .domain-card {
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        background: white;
+
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .card-header h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #1f2937;
+      }
+
+      .score-badge {
+        font-size: 20px;
+        font-weight: bold;
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: #f3f4f6;
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 12px;
+        background: #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 18px;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: #2563eb;
+      }
+
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .stat {
+        width: 48%;
+        margin-bottom: 12px;
+      }
+
+      .stat-full {
+        width: 100%;
+      }
+
+      .stat span {
+        display: block;
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 3px;
+      }
+
+      .stat strong {
+        font-size: 16px;
+        color: #111827;
+      }
+      .status {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: #eef2ff;
+        font-size: 12px;
+        font-weight: bold;
       }
     </style>
   </head>
+
   <body>
-    <h2>Summary</h2>
+    <h1>Cyber Crisis Maturity Assessment Report</h1>
 
-    {% for card in cards %}
-    <div><strong>{{ card.title }}</strong> : {{ card.value }}</div>
-    {% endfor %}
+    <h2>Global Results</h2>
 
-    <h2>Maturity Level</h2>
-    <p>{{ maturity_label }}</p>
+    <div class="summary">
+      <p><strong>Total Questions:</strong> {{ summary.total_questions }}</p>
 
-    <h2>Domain Scores</h2>
+      <p>
+        <strong>Questions Applicable:</strong>
+        {{ summary.applicable }}
+      </p>
 
-    <table>
-      <tr>
-        <th>Domain</th>
-        <th>Score</th>
-      </tr>
+      <p>
+        <strong>Conforme:</strong>
+        {{ summary.yes }}
+      </p>
 
-      {% for domain in domain_scores %}
-      <tr>
-        <td>{{ domain.domain }}</td>
-        <td>{{ domain.score }} %</td>
-      </tr>
+      <p>
+        <strong>Non Conforme:</strong>
+        {{ summary.no }}
+      </p>
+
+      <p>
+        <strong>Questions Non Applicable:</strong>
+        {{ summary.na }}
+      </p>
+    </div>
+
+    <div class="score-box">
+      <p>
+        <strong>Final Score :</strong>
+        {{ summary.score_final }} %
+      </p>
+
+      <p>
+        <strong>Maturity Level :</strong>
+        {{ maturity_label }}
+      </p>
+    </div>
+    <h2>Domain Assessment Details</h2>
+
+    <div class="domains-grid">
+      {% for d in domains %}
+
+      <div class="domain-card">
+        <div class="card-header">
+          <h3>{{ d.domain }}</h3>
+
+          <div>
+            <div class="score-badge">{{ d.score }}%</div>
+
+            <div class="status">{{ d.status }}</div>
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar" style="width: {{ d.score }}%;"></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span>Questions</span>
+            <strong>{{ d.nb_question }}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Applicable</span>
+            <strong>{{ d.nb_app }}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Conforme</span>
+            <strong>{{ d.yes }}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Non Conforme</span>
+            <strong>{{ d.no }}</strong>
+          </div>
+
+          <div class="stat">
+            <span>N/A</span>
+            <strong>{{ d.na }}</strong>
+          </div>
+
+          <div class="stat">
+            <span>Pondération</span>
+            <strong>{{ d.ponderation }}</strong>
+          </div>
+
+          <div class="stat stat-full">
+            <span>Auditeur</span>
+            <strong>{{ d.auditeur }}</strong>
+          </div>
+        </div>
+      </div>
+
       {% endfor %}
-    </table>
+    </div>
   </body>
 </html>
