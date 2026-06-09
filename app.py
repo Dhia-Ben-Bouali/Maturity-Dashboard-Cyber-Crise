@@ -77,18 +77,21 @@ def get_result_data(file_path):
     # CONST
     # ======================================================
 ICON_MAP = {
-    "Nombre Des Questions": "img/1.png",
-    "Questions Applicable": "img/3.png",
+    "NB Questions": "img/1.png",
+    "Applicable": "img/3.png",
     "Conforme": "img/2.png",
     "Non Conforme": "img/4.png",
-    "Questions non-applicable": "img/8.png",
+    "Non-applicable": "img/8.png",
     "Score": "img/5.png",
     "Ponderation ": "img/6.png",
     "Score Final": "img/9.png"
 }
 
+
+
 EXCEL_FOLDER = "Data"
 TEMPLATE_FILE = "Data/Default_Template.xlsx"
+
 
 # Default route
 @app.route("/")
@@ -120,6 +123,16 @@ def dashboard(filename):
     auditeur = None
     domain_scores = []
     maturity_label = ""
+    no_questions = []
+
+    domain_column_map = {
+        "Forensics": 10,              # K
+        "Continuité d’activité": 11,  # L
+        "Gestion de crise": 12,       # M
+        "Gestion Incidents": 13,      # N
+        "Confirmitee": 14,            # O
+        "Gouvernance": 15             # P
+    }
 
     df = pd.read_excel(
         file_path,
@@ -159,10 +172,10 @@ def dashboard(filename):
 
         titles = [
             "Total Questions",
-            "Questions Applicable",
+            "Applicable",
             "Conforme",
             "Non Conforme",
-            "Questions non-applicable",
+            "Non-applicable",
             "Score Final",
         ]
 
@@ -233,11 +246,18 @@ def dashboard(filename):
             if level["min"] <= scoremat <= level["max"]:
                 maturity_label = level["label"]
                 break
+        review_1 = request.form.get("review_1")
+        review_2 = request.form.get("review_2")
+        review_3 = request.form.get("review_3")
+        review_4 = request.form.get("review_4")
+        review_5 = request.form.get("review_5")
+        review_6 = request.form.get("review_6")
     # ======================================================
     # DOMAIN TAB (ALL OTHER DOMAINS)
     # ======================================================
     else:
 
+        
         domain_clean = domain.strip()
         score=0
 
@@ -248,11 +268,11 @@ def dashboard(filename):
             row = row.iloc[0]
 
             titles = [
-                "Nombre Des Questions",
-                "Questions Applicable",
+                "NB Questions",
+                "Applicable",
                 "Conforme",
                 "Non Conforme",
-                "Questions non-applicable",
+                "Non-applicable",
                 "Score",
                 "Ponderation "
             ]
@@ -299,8 +319,25 @@ def dashboard(filename):
                 "no": round((values[3] / total) * 100, 1) if total else 0,
                 "na": round((values[4] / total) * 100, 1) if total else 0
             }
-
             score_domain = round(float(values[5]) * 100, 1)
+
+            # Get column corresponding to selected domain
+            col = domain_column_map.get(domain_clean)
+
+            if col is not None and col < len(df.columns):
+
+                for value in df.iloc[:, col]:
+
+                    if pd.isna(value) or str(value).strip() == "":
+                        break
+
+                    no_questions.append(str(value).strip())
+            else:
+                print(f"Column {col} does not exist. Dataframe has only {len(df.columns)} columns.")
+            print("NO QUESTIONS:")
+            print(no_questions)
+            print("Selected domain:", domain_clean)
+
 
 
     # ======================================================
@@ -330,7 +367,8 @@ def dashboard(filename):
         domain_scores=domain_scores,
         maturity_label=maturity_label,
         score=score,
-        selected_file=filename
+        selected_file=filename,
+        no_questions=no_questions
     )
 
 @app.route("/Home")

@@ -124,6 +124,36 @@
             </div>
           </div>
           {% endif %}
+
+          <!-- NON CONFORMITY QUESTIONS -->
+          {% if active != "Result" and no_questions %}
+          <div class="questions-card">
+            <div class="questions-header">
+              <h3>Non-Conformity Questions</h3>
+              <span class="question-count">{{ no_questions|length }}</span>
+            </div>
+
+            <div class="table-container">
+              <table class="questions-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Question</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for question in no_questions %}
+                  <tr>
+                    <td class="index">{{ loop.index }}</td>
+                    <td>{{ question }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endif %}
         </div>
 
         <!-- RIGHT SIDE: KPI CARDS -->
