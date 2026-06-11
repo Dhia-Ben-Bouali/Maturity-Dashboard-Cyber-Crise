@@ -123,7 +123,183 @@
               <div class="value">{{ maturity_label }}</div>
             </div>
           </div>
-          {% endif %}
+          <div>
+            <ul class="step-wizard-list">
+              <li
+                class="step-wizard-item {% if score <= 16 %}current-item{% endif %}"
+              >
+                <span class="progress-count">1</span>
+                <span class="progress-label">Incomplet</span>
+              </li>
+
+              <li
+                class="step-wizard-item {% if score >= 17 and score <= 33 %}current-item{% endif %}"
+              >
+                <span class="progress-count">2</span>
+                <span class="progress-label">Exécuté</span>
+              </li>
+
+              <li
+                class="step-wizard-item {% if score >= 34 and score <= 51 %}current-item{% endif %}"
+              >
+                <span class="progress-count">3</span>
+                <span class="progress-label">Maîtrisé</span>
+              </li>
+
+              <li
+                class="step-wizard-item {% if score >= 52 and score <= 68 %}current-item{% endif %}"
+              >
+                <span class="progress-count">4</span>
+                <span class="progress-label">Établi</span>
+              </li>
+
+              <li
+                class="step-wizard-item {% if score_domain >= 69 and score_domain <= 85 %}current-item{% endif %}"
+              >
+                <span class="progress-count">5</span>
+                <span class="progress-label">Prévisible</span>
+              </li>
+
+              <li
+                class="step-wizard-item {% if score >= 86 %}current-item{% endif %}"
+              >
+                <span class="progress-count">6</span>
+                <span class="progress-label">Optimisé</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Assessment Review Section -->
+          <div class="assessment-review-card">
+            <div class="review-header">
+              <h2>Assessment Review</h2>
+              <p>Provide your feedback for each assessment domain</p>
+            </div>
+
+            <form
+              method="POST"
+              action="{{ url_for('save_feedback', filename=selected_file) }}"
+            >
+              <div class="feedback-grid">
+                <div class="feedback-box">
+                  <div class="domain-title">Governance</div>
+                  <textarea
+                    name="feedback_governance"
+                    placeholder="Enter governance feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+              {{ feedback_governance }}</textarea
+                  >
+                </div>
+
+                <div class="feedback-box">
+                  <div class="domain-title">Conformité</div>
+                  <textarea
+                    name="feedback_Conformite"
+                    placeholder="Enter conformité feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+{{ feedback_Conformite }}</textarea
+                  >
+                </div>
+
+                <div class="feedback-box">
+                  <div class="domain-title">Gestion Incidents</div>
+                  <textarea
+                    name="feedback_Incidents"
+                    placeholder="Enter incidents feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+{{ feedback_Incidents }}</textarea
+                  >
+                </div>
+
+                <div class="feedback-box">
+                  <div class="domain-title">Gestion De Crises</div>
+                  <textarea
+                    name="feedback_Crises"
+                    placeholder="Enter crises feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+{{ feedback_Crises }}</textarea
+                  >
+                </div>
+
+                <div class="feedback-box">
+                  <div class="domain-title">Continuité d'activité</div>
+                  <textarea
+                    name="feedback_activite"
+                    placeholder="Enter business continuity feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+{{ feedback_activite }}</textarea
+                  >
+                </div>
+
+                <div class="feedback-box">
+                  <div class="domain-title">Forensics</div>
+                  <textarea
+                    name="feedback_Forensics"
+                    placeholder="Enter forensics feedback..."
+                    {%
+                    if
+                    feedback_saved
+                    %}disabled{%
+                    endif
+                    %}
+                  >
+{{ feedback_Forensics }}</textarea
+                  >
+                </div>
+              </div>
+
+              <input type="hidden" name="current_domain" value="{{ active }}" />
+
+              <div class="review-submit">
+                {% if not feedback_saved %}
+
+                <button type="submit" class="save-review-btn">
+                  Save Assessment Review
+                </button>
+
+                {% endif %}
+              </div>
+            </form>
+
+            {% if feedback_saved %}
+            <form method="POST" action="{{ url_for('edit_feedback') }}">
+              <div class="review-submit">
+                <button type="submit" class="edit-review-btn">
+                  Edit Feedback
+                </button>
+              </div>
+            </form>
+            {% endif %} {% endif %}
+          </div>
 
           <!-- NON CONFORMITY QUESTIONS -->
           {% if active != "Result" and no_questions %}
@@ -155,7 +331,9 @@
           </div>
           {% endif %}
         </div>
-
+        <!-- =========================
+         2-COLUMN LAYOUT
+        ========================== -->
         <!-- RIGHT SIDE: KPI CARDS -->
         <div class="right-panel">
           <div class="kpi-grid">
@@ -185,53 +363,6 @@
           </div>
         </div>
       </div>
-      {% if active == "Result" %}
-      <div>
-        <ul class="step-wizard-list">
-          <li
-            class="step-wizard-item {% if score <= 16 %}current-item{% endif %}"
-          >
-            <span class="progress-count">1</span>
-            <span class="progress-label">Incomplet</span>
-          </li>
-
-          <li
-            class="step-wizard-item {% if score >= 17 and score <= 33 %}current-item{% endif %}"
-          >
-            <span class="progress-count">2</span>
-            <span class="progress-label">Exécuté</span>
-          </li>
-
-          <li
-            class="step-wizard-item {% if score >= 34 and score <= 51 %}current-item{% endif %}"
-          >
-            <span class="progress-count">3</span>
-            <span class="progress-label">Maîtrisé</span>
-          </li>
-
-          <li
-            class="step-wizard-item {% if score >= 52 and score <= 68 %}current-item{% endif %}"
-          >
-            <span class="progress-count">4</span>
-            <span class="progress-label">Établi</span>
-          </li>
-
-          <li
-            class="step-wizard-item {% if score_domain >= 69 and score_domain <= 85 %}current-item{% endif %}"
-          >
-            <span class="progress-count">5</span>
-            <span class="progress-label">Prévisible</span>
-          </li>
-
-          <li
-            class="step-wizard-item {% if score >= 86 %}current-item{% endif %}"
-          >
-            <span class="progress-count">6</span>
-            <span class="progress-label">Optimisé</span>
-          </li>
-        </ul>
-      </div>
-      {% endif %}
     </div>
     <!-- SCRIPT ALWAYS AT END -->
     <script>

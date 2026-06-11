@@ -3,6 +3,7 @@ from weasyprint import HTML
 import shutil
 import pandas as pd
 import os
+from flask import session
 
 app = Flask(__name__)
 
@@ -88,7 +89,7 @@ ICON_MAP = {
 }
 
 
-
+app.secret_key = "12+-34*/"
 EXCEL_FOLDER = "Data"
 TEMPLATE_FILE = "Data/Default_Template.xlsx"
 
@@ -368,7 +369,14 @@ def dashboard(filename):
         maturity_label=maturity_label,
         score=score,
         selected_file=filename,
-        no_questions=no_questions
+        no_questions=no_questions,
+        feedback_governance=session.get("feedback_governance", ""),
+        feedback_Conformite=session.get("feedback_Conformite", ""),
+        feedback_Incidents=session.get("feedback_Incidents", ""),
+        feedback_Crises=session.get("feedback_Crises", ""),
+        feedback_activite=session.get("feedback_activite", ""),
+        feedback_Forensics=session.get("feedback_Forensics", ""),
+        feedback_saved=session.get("feedback_saved", False)
     )
 
 @app.route("/Home")
@@ -423,7 +431,7 @@ def generate_report(filename):
 
     allowed_domains = [
         "Forensics",
-        "Continuité d’activité",
+        "Continuité 'd'activité",
         "Gestion de crise",
         "Gestion Incidents",
         "Confirmitee",
@@ -482,8 +490,7 @@ def generate_report(filename):
     final_score = round(float(result_row["ScoreDomain"]), 2)
 
     if final_score <= 1:
-        final_score = round(final_score * 100, 1)
-
+        final_score = round(final_score * 100, 1)   
     # =====================================================
     # READ MATURITY TABLE
     # =====================================================
@@ -556,6 +563,28 @@ def generate_report(filename):
 
     return response
 
+@app.route("/save_feedback", methods=["POST"])
+def save_feedback():
+
+    session["feedback_governance"] = request.form.get("feedback_governance", "")
+    session["feedback_Conformite"] = request.form.get("feedback_Conformite", "")
+    session["feedback_Incidents"] = request.form.get("feedback_Incidents", "")
+    session["feedback_Crises"] = request.form.get("feedback_Crises", "")
+    session["feedback_activite"] = request.form.get("feedback_activite", "")
+    session["feedback_Forensics"] = request.form.get("feedback_Forensics", "")
+
+    session["feedback_saved"] = True
+
+    return redirect(request.referrer)
+
+@app.route("/edit_feedback", methods=["POST"])
+def edit_feedback():
+
+    session["feedback_saved"] = False
+
+    return redirect(request.referrer)
+
+    
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=8000)
     #app.run()

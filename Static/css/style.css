@@ -336,7 +336,7 @@ canvas {
   display: flex;
   flex-direction: column;
   text-align: center;
-  min-width: 170px;
+  min-width: 80px;
   position: relative;
 }
 .step-wizard-item + .step-wizard-item:after {
@@ -597,4 +597,137 @@ canvas {
   border-color: #3b82f6;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ========================================
+   Assessment Review Section
+======================================== */
+
+.assessment-review-card {
+  margin-top: 35px;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.review-header {
+  margin-bottom: 25px;
+}
+
+.review-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.review-header p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+}
+
+.feedback-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 18px;
+  transition: all 0.3s ease;
+}
+
+.feedback-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-color: #3b82f6;
+}
+
+.domain-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.feedback-box textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  border: 1px solid #dbe2ea;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  background: white;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.feedback-box textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.review-submit {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.save-review-btn {
+  border: none;
+  padding: 15px 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+}
+
+.save-review-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(37, 99, 235, 0.35);
+}
+
+.save-review-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment-review-card {
+    padding: 20px;
+  }
+}
+
+.edit-review-btn {
+  border: none;
+  padding: 15px 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-review-btn:hover {
+  transform: translateY(-2px);
 }

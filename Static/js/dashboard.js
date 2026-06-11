@@ -1,0 +1,260 @@
+
+      document.addEventListener("DOMContentLoaded", function () {
+
+          /* =========================
+             DONUT CHART
+          ========================== */
+
+          const pieCanvas = document.getElementById("pieChart");
+
+          if (pieCanvas) {
+
+              new Chart(pieCanvas, {
+
+                  type: "doughnut",
+
+                  data: {
+                      labels: ["Yes", "No", "N/A"],
+
+                      datasets: [{
+                          data: [
+                              {{ chart_data.yes|default(0) }},
+                              {{ chart_data.no|default(0) }},
+                              {{ chart_data.na|default(0) }}
+                          ]
+                      }]
+                  },
+
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+
+                      cutout: "70%",
+
+                      plugins: {
+                          legend: {
+                              position: "bottom"
+                          },
+
+                          tooltip: {
+                              callbacks: {
+                                  label: function(context) {
+                                      return context.label + ": " + context.raw + "%";
+                                  }
+                              }
+                          }
+                      }
+                  }
+
+              });
+
+          }
+
+          /* =========================
+             GAUGE CHART
+          ========================== */
+
+          const gaugeCanvas = document.getElementById("gaugeChart");
+
+          if (gaugeCanvas) {
+
+              const score = {{ score_domain|default(0) }};
+
+              new Chart(gaugeCanvas, {
+
+                  type: "doughnut",
+
+                  data: {
+                      datasets: [{
+                          data: [score, 100 - score]
+                      }]
+                  },
+
+                  options: {
+
+                      responsive: true,
+                      maintainAspectRatio: false,
+
+                      rotation: -90,
+                      circumference: 180,
+
+                      cutout: "75%",
+
+                      plugins: {
+                          legend: {
+                              display: false
+                          },
+
+                          tooltip: {
+                              enabled: false
+                          }
+                      }
+                  },
+
+                  plugins: [{
+
+                      id: "gaugeText",
+
+                      beforeDraw(chart) {
+
+                          const { width, height, ctx } = chart;
+
+                          ctx.restore();
+
+                          const fontSize = (height / 120).toFixed(2);
+
+                          ctx.font = fontSize + "em Arial";
+                          ctx.textBaseline = "middle";
+
+                          const text = score + "%";
+
+                          const textX =
+                              Math.round((width - ctx.measureText(text).width) / 2);
+
+                          const textY = height / 1.3;
+
+                          ctx.fillText(text, textX, textY);
+
+                          ctx.save();
+                      }
+
+                  }]
+              });
+
+          }
+
+      });
+
+          /* =========================
+             VALUE
+          ========================== */
+
+      document.addEventListener("DOMContentLoaded", () => {
+
+          const counters = document.querySelectorAll(".count-up");
+
+          counters.forEach(counter => {
+              const target = parseFloat(counter.getAttribute("data-value"));
+              let current = 0;
+
+              const duration = 1000; // animation time (ms)
+              const stepTime = 20;
+
+              const increment = target / (duration / stepTime);
+
+              const isDecimal = target % 1 !== 0;
+
+              const timer = setInterval(() => {
+
+                  current += increment;
+
+                  if (current >= target) {
+                      current = target;
+                      clearInterval(timer);
+                  }
+
+                  counter.textContent = isDecimal
+                      ? current.toFixed(2)
+                      : Math.floor(current);
+
+              }, stepTime);
+
+          });
+
+      });
+
+
+      const domainScores = {{ domain_scores|tojson }};
+
+      // allowed domains only
+      const allowed = [
+          "Forensics",
+          "Continuité d’activité",
+          "Gestion de crise",
+          "Gestion Incidents",
+          "Confirmitee",
+          "Gouvernance"
+      ];
+
+      const filtered = domainScores.filter(d => allowed.includes(d.domain));
+
+      const labels = filtered.map(d => d.domain);
+      const data = filtered.map(d => d.score);
+
+      const radarCtx = document.getElementById("radarChart");
+
+      if (radarCtx) {
+
+          new Chart(radarCtx, {
+              type: "radar",
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: "Maturity Score (%)",
+                      data: data,
+                      fill: true
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      r: {
+                          beginAtZero: true,
+                          max: 100
+                      }
+                  },
+                  plugins: {
+                      legend: {
+                          display: false
+                      }
+                  }
+              }
+          });
+
+      }
+
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+
+          const levelMap = {
+              "Incomplet": 16,
+              "Exécuté": 33,
+              "Maîtrisé": 51,
+              "Établi": 68,
+              "Prévisible": 85,
+              "Optimisé": 100
+          };
+
+          document.querySelectorAll(".maturity-card").forEach(card => {
+
+              const level = card.getAttribute("data-maturity")?.trim();
+
+              console.log("MATURITY:", level); // DEBUG
+
+              const progress = levelMap[level];
+
+              const bar = card.querySelector(".maturity-progress-fill");
+
+              if (!bar) {
+                  console.log("BAR NOT FOUND");
+                  return;
+              }
+
+              if (progress !== undefined) {
+
+                  bar.style.width = progress + "%";
+
+                  if (progress <= 16) bar.style.background = "#ef4444";
+                  else if (progress <= 33) bar.style.background = "#f59e0b";
+                  else if (progress <= 51) bar.style.background = "#fbbf24";
+                  else if (progress <= 68) bar.style.background = "#22c55e";
+                  else if (progress <= 85) bar.style.background = "#3b82f6";
+                  else bar.style.background = "#4f46e5";
+              }
+
+          });
+
+      });
+   
